@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Note } from "../types/note";
+import type { CreateNote, Note } from "../types/note";
 
 const API = axios.create({
   baseURL: "https://notehub-public.goit.study/api",
@@ -17,13 +17,17 @@ export const getNotes = async (
   perPage: number,
   search: string,
 ): Promise<FetchNotesResponse> => {
-  const { data } = await API.get<FetchNotesResponse>("/notes", {
+  const res = await API.get<FetchNotesResponse>("/notes", {
     params: {
       page,
       perPage,
       search,
     },
   });
-  console.log(data);
-  return data;
+  return res.data;
+};
+
+export const createNote = async (newNote: CreateNote): Promise<Note> => {
+  const res = await API.post<Note>("/notes", newNote);
+  return res.data;
 };

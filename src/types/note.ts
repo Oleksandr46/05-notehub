@@ -8,7 +8,9 @@ export interface Note {
 }
 
 export interface CreateNote {
-  text: string;
+  title: string;
+  content: string;
+  tag: string;
 }
 export interface UpdateNote {
   completed: boolean;

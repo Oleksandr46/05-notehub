@@ -1,23 +1,47 @@
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import css from "./NoteForm.module.css";
 import { useId } from "react";
+import * as Yup from "yup";
+import type { CreateNote } from "../../types/note";
 
-interface NoteFormValues {
-  title: string;
-  content: string;
-  tag: string;
-}
-
-const initalValues: NoteFormValues = {
+const initialValues: CreateNote = {
   title: "",
   content: "",
-  tag: "",
+  tag: "Todo",
 };
 
-export default function NoteForm() {
+interface NoteFormProps {
+  onClose: () => void;
+}
+
+const ValidationSchema = Yup.object().shape({
+  title: Yup.string()
+    .min(3, "Name too short")
+    .max(50, "Name too long")
+    .required("Name is required"),
+  content: Yup.string()
+    // .min(5, "Message too short")
+    .max(500, "Message too long"),
+  tag: Yup.string()
+    .oneOf(
+      ["Todo", "Work", "Personal", "Meeting", "Shopping"],
+      "Invalid delivery method",
+    )
+    .required("Delivery method is required"),
+});
+
+export default function NoteForm({ onClose }: NoteFormProps) {
   const fieldId = useId();
+
+  const handleSubmit = (values: CreateNote) => {
+    console.log(values);
+  };
   return (
-    <Formik initalValues={initalValues}>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      validationSchema={ValidationSchema}
+    >
       <Form className={css.form}>
         <div className={css.formGroup}>
           <label htmlFor={`${fieldId}-title`}>Title</label>
@@ -57,10 +81,10 @@ export default function NoteForm() {
           <ErrorMessage name="tag" component="span" className={css.error} />
         </div>
         <div className={css.actions}>
-          <button type="button" className={css.cancelButton}>
+          <button type="button" className={css.cancelButton} onClick={onClose}>
             Cancel
           </button>
-          <button type="submit" className={css.submitButton}>
+          <button type="submit" className={css.submitButton} disabled={false}>
             Create note
           </button>
         </div>

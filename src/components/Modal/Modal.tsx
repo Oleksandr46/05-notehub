@@ -29,9 +29,6 @@ export default function Modal({ children, onClose }: ModalProps) {
     };
   }, [onClose]);
 
-  const modalRoot = document.getElementById("modal-root");
-  if (!modalRoot) return null;
-
   return createPortal(
     <div
       className={css.backdrop}
@@ -46,6 +43,6 @@ export default function Modal({ children, onClose }: ModalProps) {
         {children}
       </div>
     </div>,
-    modalRoot,
+    document.body,
   );
 }
