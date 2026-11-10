@@ -3,6 +3,8 @@ import css from "./NoteForm.module.css";
 import { useId } from "react";
 import * as Yup from "yup";
 import type { CreateNote } from "../../types/note";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createNote } from "../../services/noteService";
 
 const initialValues: CreateNote = {
   title: "",
@@ -33,8 +35,21 @@ const ValidationSchema = Yup.object().shape({
 export default function NoteForm({ onClose }: NoteFormProps) {
   const fieldId = useId();
 
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      alert("Note created successfully!");
+      queryClient.invalidateQueries({
+        queryKey: ["notes"],
+      });
+      onClose();
+    },
+  });
+
   const handleSubmit = (values: CreateNote) => {
-    console.log(values);
+    mutate(values);
   };
   return (
     <Formik
@@ -84,7 +99,11 @@ export default function NoteForm({ onClose }: NoteFormProps) {
           <button type="button" className={css.cancelButton} onClick={onClose}>
             Cancel
           </button>
-          <button type="submit" className={css.submitButton} disabled={false}>
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={isPending}
+          >
             Create note
           </button>
         </div>
